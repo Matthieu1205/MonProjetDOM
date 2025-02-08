@@ -1,52 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const produits = document.querySelectorAll('.card');
-  const elementPrixTotal = document.querySelector('.total');
-  let prixTotal = 0
+    const produits = document.querySelectorAll('.card');
+    const elementPrixTotal = document.querySelector('.total');
+    let prixTotal = 0;
+  
+    produits.forEach(produit => {
+        const boutonPlus = produit.querySelector('.fa-plus-circle');
+        const boutonMoins = produit.querySelector('.fa-minus-circle');
+        const boutonPoubelle = produit.querySelector('.fa-trash-alt');
+        const boutonCoeur = produit.querySelector('.fa-heart');
+        const elementQuantite = produit.querySelector('.quantity');
+        const elementPrixUnitaire = produit.querySelector('.unit-price');
+        let quantite = 0;
+        const prixUnitaire = parseFloat(elementPrixUnitaire.textContent.replace('$', ''));
+  
+            // Ajouter un article dans le panier
+        boutonPlus.addEventListener('click', () => {
+            quantite++;
+            elementQuantite.textContent = quantite;
+            mettreAJourPrixTotal(prixUnitaire);
+        });
+        
+            // Retirer un article 
 
-  produits.forEach(produit => {
-      const boutonPlus = produit.querySelector('.fa-plus-circle');
-      const boutonMoins = produit.querySelector('.fa-minus-circle');
-      const boutonPoubelle = produit.querySelector('.fa-trash-alt');
-      const boutonCoeur = produit.querySelector('.fa-heart');
-      const elementQuantite = produit.querySelector('.quantity');
-      const elementPrixUnitaire = produit.querySelector('.unit-price');
-      let quantite = 0;
-      const prixUnitaire = parseFloat(elementPrixUnitaire.textContent.replace('$', ''));
+        boutonMoins.addEventListener('click', () => {
+            if (quantite > 0) {
+                quantite--;
+                elementQuantite.textContent = quantite;
+                mettreAJourPrixTotal(-prixUnitaire);
+            }
+        });
+        
+            // Supprimer un article du panier
 
-      // Partie Ajouter un article
+        boutonPoubelle.addEventListener('click', () => {
+            produit.remove();
+            mettreAJourPrixTotal(-quantite * prixUnitaire);
+        });
+        
+            // Aimer un aricle
 
-      boutonPlus.addEventListener('click', () => {
-          quantite++;
-          elementQuantite.textContent = quantite;
-          mettreAJourPrixTotal(prixUnitaire)
-      });
-      
-      // Retirer un Produit du panier
+        boutonCoeur.addEventListener('click', () => {
+            boutonCoeur.classList.toggle('liked');
+        });
+    });
+  
+            // Mettre a jour le prix des article a chaque fois que l'on retire ajoute ou suprime un article
 
-      boutonMoins.addEventListener('click', () => {
-          if (quantite > 0) {
-              quantite--;
-              elementQuantite.textContent = quantite;
-              mettreAJourPrixTotal(-prixUnitaire);
-          }
-      })
-      
-      // Aimer un Produit  
-
-      boutonPoubelle.addEventListener('click', () => {
-          mettreAJourPrixTotal(-prixUnitaire * quantite);
-          quantite = 0
-          elementQuantite.textContent = quantite;
-      });
-
-      boutonCoeur.addEventListener('click', () => {
-          boutonCoeur.classList.toggle('liked');
-      })
+    function mettreAJourPrixTotal(montant) {
+        prixTotal += montant;
+        elementPrixTotal.textContent = `${prixTotal.toFixed(2)} $`;
+    }
   });
-
-      // Afficher le prix total des Produits dans le pânior
-  function mettreAJourPrixTotal(montant) {
-      prixTotal += montant;
-      elementPrixTotal.textContent = `${prixTotal.toFixed(2)} $`;
-  }
-});
+  // Ajouter un article par défaut dans le panier
+  if (produit.classList.contains('default-item')) {
+    quantite = 1;
+    elementQuantite.textContent = quantite;
+    mettreAJourPrixTotal(prixUnitaire);
+};
